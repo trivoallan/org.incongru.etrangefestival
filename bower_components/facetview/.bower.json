@@ -1,0 +1,14 @@
+{
+  "name": "facetview",
+  "homepage": "https://github.com/okfn/facetview",
+  "_release": "e5a0ef6a64",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "e5a0ef6a64d8dffc309d07473021c5c602a5d59d"
+  },
+  "_source": "https://github.com/okfn/facetview.git",
+  "_target": "*",
+  "_originalSource": "https://github.com/okfn/facetview.git",
+  "_direct": true
+}

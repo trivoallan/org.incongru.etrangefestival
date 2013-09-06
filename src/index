@@ -1,0 +1,92 @@
+#!/usr/bin/env php
+<?php
+require_once(__DIR__.'/../vendor/autoload.php');
+
+// Instanciate ES client
+$es = \ElasticSearch\Client::connection('http://127.0.0.1:9200/etrangefestival/film');
+
+# Delete index
+$es->delete();
+
+# Create mappings
+
+# Crawl pages
+$urlTemplate = 'http://www.etrangefestival.com/fr/2013/programme/%d.html';
+$limit = 147;
+$films = array();
+for ($i = 1; $i <= $limit; $i++) {
+  $urlFilm = sprintf($urlTemplate, $i);
+  echo $urlFilm, "\n";
+  $guzzle = new \Guzzle\Http\Client('http://www.etrangefestival.com');
+  try {
+    $request = $guzzle->get($urlFilm);
+    $response = $guzzle->send($request);
+
+    $body = (string)$response->getBody();
+    $crawler = new \Symfony\Component\DomCrawler\Crawler($body);
+    
+    $title = $crawler->filter('section.film h5')->text();
+    
+    $dateLiteral = $crawler->filter('h4')->text();
+    $date = array();
+    preg_match('/^\w+ (\d+) septembre - (.*) - Salle (\d+).*$/', $dateLiteral, $date);
+    $time = explode('H', $date[2]);
+    $timestamp = mktime($time[0], $time[1], 0, 9, $date[1], 2013);
+
+    try {
+      $description = $crawler->filter('div.film_description p')->text();
+    } catch (\Exception $e) {
+      echo $e->getMessage(), "\n";
+    }
+    
+    try {
+      $description .= $crawler->filter('div.film_commentaire p')->text();
+    } catch (\Exception $e) {
+      echo $e->getMessage(), "\n";
+    }
+
+    try {
+      $image = $crawler->filter('img.poster')->attr('src');
+    } catch (\Exception $e) {
+      echo $e->getMessage(), "\n";
+    }
+
+    $attributes = array();
+    $attributesLiteral = $crawler->filter('p.film_first:nth-of-type(1)')->text();
+    preg_match('/^(.*) - (\d+) - (.*).*$/', $attributesLiteral, $attributes);
+
+    $attributesExt = array();
+    $attributesExtLiteral = $crawler->filter('p.film_first:nth-of-type(2)')->text();
+    preg_match('/^(.*) - (.*) - (.*).*$/', $attributesExtLiteral, $attributesExt);
+
+    $film = array(
+      'url' => $urlFilm,
+      'id'  => $i,
+      'title' => trim($title),
+      'dateLiteral' => $dateLiteral,
+      'day' => $date[1],
+      'time' => $date[2],
+      'salle' => $date[3],
+      'description' => $description,
+      'dateTimestamp' => $timestamp,
+      'image' => $image,
+      'attributesLiteral' => $attributesLiteral,
+      'attributesExtLiteral' => $attributesExtLiteral,
+      'attributesDirector' => str_replace(' ', '_', trim($attributes[1])),
+      'attributesYear' => $attributes[2],
+      'attributesCountry' => str_replace(array(' ', '-'), array('_', '_'), trim($attributes[3])),
+      'attributesLang' => str_replace(' ', '_', trim($attributesExt[1])),
+      'attributesColors' => str_replace(' ', '_', trim($attributesExt[2])),
+      'attributesDuration' => $attributesExt[3]
+    );
+  } catch (\Guzzle\Http\Exception\ClientErrorResponseException $e) {
+    echo $e->getMessage(), "\n";
+  } catch (\Exception $e) {
+    throw $e;
+  }
+
+  print_r($film);
+
+  $es->index($film, $film['id']);
+}
+
