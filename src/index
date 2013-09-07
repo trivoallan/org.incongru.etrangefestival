@@ -3,10 +3,18 @@
 require_once(__DIR__.'/../vendor/autoload.php');
 
 // Instanciate ES client
-$es = \ElasticSearch\Client::connection('http://127.0.0.1:9200/etrangefestival/film');
+$esConnection = new \Elastica\Client(
+  array(
+    'host' => 'eu-west-1.searchbox.io',
+    'port' => 80,
+    'path' => '/api-key/b877b1a44fd05fb6839f2f64f106d620'
+  )
+);
 
-# Delete index
-$es->delete();
+$esIndex = $esConnection->getIndex('etrangefestival');
+$esTypeFilm = $esIndex->getType('film');
+
+# Delete index documents
 
 # Create mappings
 
@@ -87,6 +95,14 @@ for ($i = 1; $i <= $limit; $i++) {
 
   print_r($film);
 
-  $es->index($film, $film['id']);
+  $esDocumentFilm = new \Elastica\Document($film['id'], $film);
+  try {
+    $esTypeFilm->addDocument($esDocumentFilm);
+  } catch (Exception $e) {
+    echo $e->getMessage(), "\n";
+  }
 }
+
+// Refresh index
+$esTypeFilm->getIndex()->refresh();
 

@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "a1221c82bd7f8306088fcb956e5943d6",
+    "hash": "dd74fef5c4394d6449f0c1efdef22daf",
     "packages": [
         {
             "name": "constructions-incongrues/ananas-build-toolkit",
@@ -272,6 +272,62 @@
             "time": "2013-03-13 11:01:20"
         },
         {
+            "name": "ruflin/elastica",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ruflin/Elastica.git",
+                "reference": "e9f0bb4a19b33d151caaed4677e3c015ac873ff9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ruflin/Elastica/zipball/e9f0bb4a19b33d151caaed4677e3c015ac873ff9",
+                "reference": "e9f0bb4a19b33d151caaed4677e3c015ac873ff9",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "require-dev": {
+                "munkie/elasticsearch-thrift-php": "1.4.*",
+                "psr/log": "~1.0"
+            },
+            "suggest": {
+                "monolog/monolog": "Logging request",
+                "munkie/elasticsearch-thrift-php": "Allow using thrift transport",
+                "psr/log": "for logging"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "0.20.5.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Elastica": "lib/",
+                    "Elastica\\Test": "test/lib/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache 2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Nicolas Ruflin",
+                    "homepage": "http://ruflin.com/"
+                }
+            ],
+            "description": "Elasticsearch Client",
+            "homepage": "http://ruflin.github.com/Elastica/",
+            "keywords": [
+                "client",
+                "search"
+            ],
+            "time": "2013-09-04 09:05:22"
+        },
+        {
             "name": "symfony/css-selector",
             "version": "v2.3.4",
             "target-dir": "Symfony/Component/CssSelector",
@@ -441,6 +497,7 @@
         "constructions-incongrues/ananas-build-toolkit": 20,
         "guzzle/http": 20,
         "nervetattoo/elasticsearch": 20,
+        "ruflin/elastica": 20,
         "symfony/dom-crawler": 20
     },
     "platform": [
